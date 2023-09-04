@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <link rel="shortcut icon" href="assets/img/fav.png" type="image/x-icon">
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>THL Campus Wetterseite</title>
+        
+        <link rel="stylesheet" href="css/responsive.dataTables.min.css">
+        <!-- <script src="js/fontawesome-all.js" crossorigin="anonymous"></script> -->
+        <script src="js/axios.min.js"></script>
+        <script src="js/plotly.js"></script>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/dataTables.bootstrap5.min.css">
+        <link href="css/styles.css" rel="stylesheet" />
+        <script src="js/fontawesome-all.js" crossorigin="anonymous"></script>
+    </head>
+    <body class="sb-nav-fixed" tabindex="0" style="position: relative">
+
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+            <div class="container-fluid justify-content-end">
+              <!-- Turn On/Off Toggle Button -->
+        
+                <div class="form-check form-switch autoUpdate m-1">
+                    
+                    <label class="form-check-label btn btn-secondary" for="flexSwitchCheckDefault">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" checked>
+                            <span>Automatisch aktualisieren</span>
+                    </label>
+                </div>
+  
+              <!-- Refresh Button -->
+              <a href="#" class="btn btn-danger refreshButton">
+                <i class="fa fa-refresh"></i> Daten aktualisieren
+              </a>
+            </div>
+          </nav>
+
+          <div class="toast-container position-fixed bottom-0 end-0 p-3 ">
+            <div id="liveToast" class="toast bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body" >
+                        Die Daten wurden erfolgreich aktualisiert.
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                  </div>
+            </div>
+          </div>
+          
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                               <!-- Navbar Brand-->
+                                <a class="navbar-brand ps-3" style="color: #fff;" href="index.html">THL Campus<br> Wetterseite</a>
+                                <!-- Sidebar Toggle-->
+                                <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+                            
+                            <div class="sb-sidenav-menu-heading">Menü</div>
+                            <ul class="nav nav-pills">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Aktuelle">
+                                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                        Aktuelle Messwerte
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Windgeschwindigkeit">
+                                        <div class="sb-nav-link-icon"><i class="fa-solid fa-compass"></i></div>
+                                        Windgeschwindigkeit
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Windrichtung">
+                                        <div class="sb-nav-link-icon"><i class="fa-solid fa-wind"></i></div>
+                                        Windrichtung
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Temperatur">
+                                        <div class="sb-nav-link-icon"><i class="fa-solid fa-temperature-low"></i></div>
+                                        Temperatur
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Luftdruck">
+                                        <div class="sb-nav-link-icon"><i class="fa-sharp fa-solid fa-line-chart"></i></div>
+                                        Luftdruck
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Luftfeuchtigkeit">
+                                        <div class="sb-nav-link-icon"><i class="fas fa-tint"></i></div>
+                                        Luftfeuchtigkeit
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Sonneneinstrahlung">
+                                        <div class="sb-nav-link-icon"><i class="fa-solid fa-circle-radiation"></i></div>
+                                        Strahlung
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Umweltradioaktivität">
+                                        <div class="sb-nav-link-icon"><i class="fa-solid fa-circle-radiation"></i></div>
+                                        Umweltradioaktivität
+                                    </a>
+                                </li>
+                            </ul>
+                    </div>
+            
+                </nav>
+            </div>
+            <div id="layoutSidenav_content" >
+                <main>
+                    <div class="container-fluid px-4" >
+
+                    <div class="logo">
+                        <img src="assets/img/logo.jpeg" alt="Technische Hochschule Lübeck logo">
+                    </div>
+
+                      <div class="row" id="Aktuelle">
+                        <div class="col-xl-12">
+                          <h1 class="mt-4">Aktuelle Messwerte </h1>
+                          <ol class="breadcrumb mb-4">
+                              <li class="breadcrumb-item active">(1- Min.- Mittelwerte)</li>
+                          </ol>
+                            <div class="card mb-4 bootstrap-table">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-area me-1"></i>
+                                    letzte Aktualisierung: <span class="Mittelwerte"></span>
+                                </div>
+                                <table id="datatable"class="table table-striped" >
+                                    <thead>
+                                        <tr>
+                                            <th>Nr.</th>
+                                            <th>Kanal</th>
+                                            <th>Wert</th>
+                                            <th>Maßeinheit</th>
+                                            <th>Maximum</th>
+                                            <th>Minimum</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                          <th>Nr.</th>
+                                          <th>Kanal</th>
+                                          <th>Wert</th>
+                                          <th>Maßeinheit</th>
+                                          <th>Maximum</th>
+                                          <th>Minimum</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                             </div>
+                            </div>
+                        </div>
+
+                        <div class="row" id="Windgeschwindigkeit">
+                            <div class="col-xl-12">
+                              <h1 class="mt-4">Windgeschwindigkeit</h1>
+                              <ol class="breadcrumb mb-4">
+                                  <li class="breadcrumb-item active">Ein 2-Tages-Diagramm der Windgeschwindigkeit entlang von Mittelwerten und Maximalwerten</li>
+                              </ol>
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-area me-1"></i>
+                                        Windgeschwindigkeit
+                                    </div>
+                                    <div id="wind_speed"></div>
+                                </div>
+                            </div>
+                    </div>
+
+                    <div class="row" id="Windrichtung">
+                        <div class="col-xl-12">
+                          <h1 class="mt-4">Windrichtung</h1>
+                          <ol class="breadcrumb mb-4">
+                              <li class="breadcrumb-item active">Ein 2-Tage-Diagramm der Windrichtung</li>
+                          </ol>
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-area me-1"></i>
+                                    Windrichtung
+                                </div>
+                                <div id="wind_direction"></div>
+                            </div>
+                        </div>
+                </div>
+
+                <div class="row" id="Temperatur">
+                    <div class="col-xl-12">
+                      <h1 class="mt-4">Temperatur</h1>
+                      <ol class="breadcrumb mb-4">
+                          <li class="breadcrumb-item active">Ein 2-Tage-Diagramm der Temperatur</li>
+                      </ol>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                Temperatur
+                            </div>
+                            <div id="temperature"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="Luftdruck">
+                    <div class="col-xl-12">
+                      <h1 class="mt-4">Luftdruck</h1>
+                      <ol class="breadcrumb mb-4">
+                          <li class="breadcrumb-item active">Ein 2-Tage-Diagramm des Luftdrucks</li>
+                      </ol>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                Luftdruck
+                            </div>
+                            <div id="pressure"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="Luftfeuchtigkeit">
+                    <div class="col-xl-12">
+                      <h1 class="mt-4">Luftfeuchtigkeit</h1>
+                      <ol class="breadcrumb mb-4">
+                          <li class="breadcrumb-item active">Ein 2-Tage-Diagramm der Luftfeuchtigkeit</li>
+                      </ol>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                Luftfeuchtigkeit
+                            </div>
+                            <div id="humidity"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="Sonneneinstrahlung">
+                    <div class="col-xl-12">
+                      <h1 class="mt-4">Strahlung</h1>
+                      <ol class="breadcrumb mb-4">
+                          <li class="breadcrumb-item active">Ein 1-Tages-Diagramm der Strahlung</li>
+                      </ol>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                Strahlung
+                            </div>
+                            <div id="radiation"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="Umweltradioaktivität">
+                    <div class="col-xl-12">
+                      <h1 class="mt-4">Umweltradioaktivität</h1>
+                      <br>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                Umweltradioaktivität
+                            </div>
+                            <img src="assets/img/screen.gif" alt="Umweltradioaktivität">
+                        </div>
+                    </div>
+                </div>
+
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-center small">
+                            <div class="text-muted">Copyright &copy; THL Campus Wetterseite <span class="dynamic_year"></span></div>
+               
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        
+        <div class="loader_wrapper">
+            <img src="assets/img/loading-loader.gif" alt="" srcset="">
+        </div>         
+        <script src="js/plotly-locale-de.js"></script>
+
+        <script src="js/jquery-3.5.1.js"></script>
+        <script src="js/jquery.dataTables.min.js"></script>
+        <script src="js/autoScrollToSection.js"></script>
+        <script src="js/dataTables.responsive.min.js"></script>
+        <script src="js/dataTables.bootstrap5.min.js"></script>      
+        <script src="js/bootstrap.bundle.min.js" ></script>
+        <script src="js/table.js"></script>
+        <script src="js/lib.js"></script>
+        <script src="js/scripts.js"></script>
+
+        
+    </body>
+</html>
